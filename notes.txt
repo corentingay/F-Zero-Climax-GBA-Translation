@@ -22,6 +22,13 @@ Data Structure (8 bytes)
 * Unknown 1 could be the image, background, or menu code
   pointer. I haven't looked into it
 
+Scratch :
+	array of 6 addresses at 080635f0
+		-> maybe each menu code branch
+
+	array of 6 struct {.word (address), .word}
+
+
 ============================================================
 Font Image Data
 ============================================================

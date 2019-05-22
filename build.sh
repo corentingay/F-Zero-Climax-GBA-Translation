@@ -32,3 +32,4 @@ armips -erroronwarning asm/misc.asm
 armips -erroronwarning asm/variableWidthFont.asm
 armips -erroronwarning asm/script/story/story.asm
 armips -erroronwarning asm/script/profiles/profiles.asm
+armips -erroronwarning asm/script/menus/menus.asm
