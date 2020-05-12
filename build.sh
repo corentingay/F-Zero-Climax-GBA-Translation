@@ -2,11 +2,20 @@ rom=${1:-"rom/input.gba"}
 out_rom=${2:-"rom/output.gba"}
 diff=${3:-"rom/patch.diff"}
 
+sources=(\
+	"asm/misc.asm"\
+	"asm/variableWidthFont.asm"\
+	"asm/script/story/story.asm"\
+	"asm/script/profiles/profiles.asm"\
+	"asm/script/menus/menus.asm"\
+	)
+
 # Checks that the rom is the correct one.
-if [ ! -w "$rom" ] ; then
-	echo "ROM is not present or is not writable"
+if [ ! -r "$rom" ] ; then
+	echo "ROM is not present or is not readable"
 	exit 1
 else
+	# This is the name of the ROM followed by the CRC32.
 	is_fzero_climax_jp=$(strings $rom | grep F-ZEROCLIMAXBFTJ01)
 	if [ $is_fzero_climax_jp = "" ] ; then
 		echo "ROM is not F-ZERO Climax"
@@ -27,13 +36,17 @@ rm $out_rom
 # Copy given gba file into the output rom read by the .asm files.
 cp $rom $out_rom
 
-# TODO : List all assembly files into something and loop on it.
-
-armips -erroronwarning asm/misc.asm
-armips -erroronwarning asm/variableWidthFont.asm
-armips -erroronwarning asm/script/story/story.asm
-armips -erroronwarning asm/script/profiles/profiles.asm
+if [ ! -w "$out_rom" ] ; then
+	echo "Copied ROM is not present or is not writable"
+	exit 1
+else
+	armips -erroronwarning asm/script/menus/menus.asm
+	for asm_file in "${sources[@]}"
+	do
+		echo "Compiling assembly file : $asm_file"
+		armips -erroronwarning $asm_file
+	done
+fi
 
 # Generate a diff that can be applied to an existing ROM.
 bsdiff $rom $out_rom $diff
-
